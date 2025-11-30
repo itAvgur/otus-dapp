@@ -14,10 +14,28 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "StorageArray",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.StorageArray__factory>;
+    getContractFactory(
+      name: "StorageMapping",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.StorageMapping__factory>;
+    getContractFactory(
       name: "SimpleStorage",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SimpleStorage__factory>;
 
+    getContractAt(
+      name: "StorageArray",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.StorageArray>;
+    getContractAt(
+      name: "StorageMapping",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.StorageMapping>;
     getContractAt(
       name: "SimpleStorage",
       address: string | ethers.Addressable,
@@ -25,10 +43,28 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.SimpleStorage>;
 
     deployContract(
+      name: "StorageArray",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.StorageArray>;
+    deployContract(
+      name: "StorageMapping",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.StorageMapping>;
+    deployContract(
       name: "SimpleStorage",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SimpleStorage>;
 
+    deployContract(
+      name: "StorageArray",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.StorageArray>;
+    deployContract(
+      name: "StorageMapping",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.StorageMapping>;
     deployContract(
       name: "SimpleStorage",
       args: any[],

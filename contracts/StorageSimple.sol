@@ -2,15 +2,15 @@
 pragma solidity ^0.8.19;
 
 contract SimpleStorage {
-    // Переменная для хранения строкового значения
+    // Variable to store string value
     string private storedData;
 
-    // Событие для отслеживания изменений
+    // Event to track changes
     event ValueChanged(string newValue, address indexed changedBy);
 
     /**
-     * @dev Конструктор инициализирует контракт с начальным значением
-     * @param initialValue Начальное значение для хранения
+     * @dev Constructor initializes the contract with an initial value
+     * @param initialValue Initial value to store
      */
     constructor(string memory initialValue) {
         storedData = initialValue;
@@ -18,8 +18,8 @@ contract SimpleStorage {
     }
 
     /**
-     * @dev Функция для изменения хранимого значения
-     * @param newValue Новое значение для хранения
+     * @dev Function to change the stored value
+     * @param newValue New value to store
      */
     function setValue(string memory newValue) public {
         storedData = newValue;
@@ -27,16 +27,16 @@ contract SimpleStorage {
     }
 
     /**
-     * @dev Функция для чтения текущего значения
-     * @return Текущее хранимое значение
+     * @dev Function to read the current value
+     * @return Current stored value
      */
     function getValue() public view returns (string memory) {
         return storedData;
     }
 
     /**
-     * @dev Вспомогательная функция для получения информации о контракте
-     * @return Название контракта и текущее значение
+     * @dev Helper function to get contract information
+     * @return Contract name and current value
      */
     function getContractInfo()
         public

@@ -10,22 +10,18 @@ import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers"
 
 describe("SimpleStorage Contract", function () {
   let SimpleStorage: ContractFactory;
-  let simpleStorage: Contract & {
-    getValue: () => Promise<string>;
-    setValue: (value: string) => Promise<TransactionResponse>;
-    getContractInfo: () => Promise<[string, string]>;
-  };
+  let simpleStorage: any;
   let owner: SignerWithAddress;
   let addr1: SignerWithAddress;
 
   beforeEach(async function () {
-    // Получаем аккаунты
+    // Get accounts
     [owner, addr1] = (await ethers.getSigners()) as [
       SignerWithAddress,
       SignerWithAddress
     ];
 
-    // Развертываем контракт
+    // Deploy contract
     SimpleStorage = await ethers.getContractFactory("SimpleStorage");
     simpleStorage = (await SimpleStorage.deploy(
       "Initial Value"
@@ -37,47 +33,47 @@ describe("SimpleStorage Contract", function () {
     await simpleStorage.waitForDeployment();
   });
 
-  describe("Развертывание", function () {
-    it("Должен установить правильное начальное значение", async function () {
+  describe("Deployment", function () {
+    it("Should set the correct initial value", async function () {
       expect(await simpleStorage.getValue()).to.equal("Initial Value");
     });
 
-    it("Должен установить правильного владельца", async function () {
+    it("Should return correct contract info", async function () {
       const contractInfo: [string, string] =
         await simpleStorage.getContractInfo();
       expect(contractInfo[0]).to.equal("SimpleStorage Contract v1.0");
     });
   });
 
-  describe("Изменение значения", function () {
-    it("Должен позволять изменять значение", async function () {
+  describe("Changing value", function () {
+    it("Should allow changing the value", async function () {
       const newValue: string = "New Test Value";
 
-      // Изменяем значение
+      // Change value
       await expect(simpleStorage.setValue(newValue))
         .to.emit(simpleStorage, "ValueChanged")
         .withArgs(newValue, owner.address);
 
-      // Проверяем новое значение
+      // Check new value
       expect(await simpleStorage.getValue()).to.equal(newValue);
     });
 
-    it("Должен позволять любому изменять значение", async function () {
+    it("Should allow anyone to change the value", async function () {
       const newValue: string = "Value from another account";
 
-      // Изменяем значение с другого аккаунта
+      // Change value from another account
       await simpleStorage.connect(addr1).setValue(newValue);
 
       expect(await simpleStorage.getValue()).to.equal(newValue);
     });
 
-    it("Должен эмитировать событие при изменении", async function () {
+    it("Should emit event on value change", async function () {
       const newValue: string = "Event Test Value";
 
       const tx: TransactionResponse = await simpleStorage.setValue(newValue);
       const receipt: TransactionReceipt | null = await tx.wait();
 
-      // Проверяем событие
+      // Check event
       expect(receipt).to.not.be.null;
       const event = receipt!.logs.find(
         (log: any) => log.eventName === "ValueChanged"
@@ -87,8 +83,8 @@ describe("SimpleStorage Contract", function () {
     });
   });
 
-  describe("Чтение значения", function () {
-    it("Должен возвращать корректное значение после изменения", async function () {
+  describe("Reading value", function () {
+    it("Should return correct value after changes", async function () {
       const testValues: string[] = ["First", "Second", "Third"];
 
       for (const value of testValues) {
@@ -97,7 +93,7 @@ describe("SimpleStorage Contract", function () {
       }
     });
 
-    it("Должен возвращать информацию о контракте", async function () {
+    it("Should return contract information", async function () {
       const info: [string, string] = await simpleStorage.getContractInfo();
 
       expect(info[0]).to.equal("SimpleStorage Contract v1.0");
@@ -105,8 +101,8 @@ describe("SimpleStorage Contract", function () {
     });
   });
 
-  describe("Газовые затраты", function () {
-    it("Должен иметь разумные газовые затраты на setValue", async function () {
+  describe("Gas costs", function () {
+    it("Should have reasonable gas costs for setValue", async function () {
       const tx: TransactionResponse = await simpleStorage.setValue("Gas Test");
       const receipt: TransactionReceipt | null = await tx.wait();
 
@@ -114,8 +110,8 @@ describe("SimpleStorage Contract", function () {
       expect(Number(receipt!.gasUsed)).to.be.lessThan(100000);
     });
 
-    it("Должен иметь низкие газовые затраты на getValue", async function () {
-      // view функции не требуют газа, но проверим вызов
+    it("Should have low gas costs for getValue", async function () {
+      // view functions don't require gas, but let's verify the call
       const value: string = await simpleStorage.getValue();
       expect(value).to.be.a("string");
     });
