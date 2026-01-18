@@ -22,8 +22,6 @@ Each contract includes:
 npm install
 ```
 
-## Usage
-
 ### Running Tests
 
 Run all tests:
@@ -86,6 +84,28 @@ npx hardhat run scripts/deploy-storage-mapping.js --network localhost
 
 The local node will display all transactions and contract interactions in real-time.
 
+#### Convenient npm scripts
+
+This repository provides npm scripts that run the deploy scripts through Hardhat (recommended). Use these instead of calling `node` directly.
+
+```bash
+# Deploy to the built-in Hardhat network (quick)
+npm run deploy:simple    # deploy SimpleStorage
+npm run deploy:array     # deploy StorageArray
+npm run deploy:mapping   # deploy StorageMapping
+npm run deploy:secure    # deploy SecureStorage
+
+# Deploy to a running local node (start node in another terminal first)
+npm run deploy:simple -- --network localhost
+npm run deploy:array -- --network localhost
+npm run deploy:mapping -- --network localhost
+npm run deploy:secure -- --network localhost
+```
+
+Notes:
+- Do NOT run the deploy scripts with plain `node scripts/...` because Hardhat injects the runtime (including `ethers`) when you run the scripts via `npx hardhat run` or the npm wrappers.
+- If you see module errors related to Hardhat plugins, run `npm install` to ensure devDependencies are installed (this project includes `@nomicfoundation/hardhat-toolbox` and `solidity-coverage`).
+
 ## Storage Patterns Comparison
 
 ### 1. Simple Variable Storage (`SimpleStorage`)
@@ -106,8 +126,6 @@ string private storedData;
 - Contract metadata (name, version)
 - Simple state variables
 - Counter values
-
-**Gas Costs:** ~30,000 gas for setValue operation
 
 ---
 
@@ -144,8 +162,6 @@ string[] private dataArray;
 - When you need to retrieve all data
 - Small to medium-sized collections (<100 items)
 
-**Gas Costs:** ~32,000-79,000 gas for addValue operation
-
 ---
 
 ### 3. Mapping Storage (`StorageMapping`)
@@ -181,8 +197,6 @@ mapping(address => string) private dataMapping;
 - When you need fast lookup by key
 - When iteration is not required
 
-**Gas Costs:** ~27,000-97,000 gas for setValue operation
-
 ---
 
 ## When to Use Which Pattern
@@ -206,18 +220,6 @@ mapping(address => string) private dataMapping;
 - User-specific data (balances, permissions)
 - Iteration is not required or can be handled separately
 
-### Hybrid Approach (Used in StorageMapping):
-For best of both worlds, combine mapping with array:
-```solidity
-mapping(address => string) private dataMapping;
-address[] private addressList;  // Track keys
-```
-
-This allows:
-- Fast O(1) lookups via mapping
-- Iteration capability via array
-- Slightly higher gas costs but maximum flexibility
-
 ## Contract Details
 
 ### SimpleStorage
@@ -234,3 +236,27 @@ This allows:
 - Address to string mapping
 - Events: `ValueStored`, `ValueDeleted`
 - Methods: `setValue`, `getValue`, `setValueFor`, `getValueFor`, `deleteValue`, `hasValue`, `getAllAddresses`, `getAddressCount`, `getBatchValues`
+
+## Hashes and Signatures
+
+Hashes and cryptographic signatures are fundamental primitives in blockchain systems. This project demonstrates storing and verifying hashes and signatures to illustrate common patterns used in real dApps.
+
+Why use hashes on-chain:
+- Privacy / gas efficiency: instead of storing large or sensitive data on-chain you store its hash (e.g. keccak256 or SHA-256). The original data can be kept off-chain and revealed only when necessary. The on-chain hash acts as a commitment.
+- Integrity: a hash uniquely represents data. If the data changes, its hash changes. Contracts can verify that off-chain data matches an on-chain commitment.
+- Indexing and comparison: fixed-size hashes (bytes32) are cheaper to store and compare than variable-length strings or blobs.
+
+Why use signatures on-chain:
+- Authentication: signatures prove that a specific Ethereum private key approved a message or an action without the signer needing to send an on-chain transaction.
+- Authorization / meta-transactions: users sign messages off-chain; a relayer or contract can submit the signed message and the contract verifies the signature (via ecrecover) to authorize actions on behalf of the signer.
+- Non-repudiation: signatures tie a message to a signer and can be used to resolve disputes or execute conditional logic only when the right party approved it.
+
+Real dApp examples:
+- Permit / meta-transactions: ERC-20 `permit` allows token approvals via a signature (EIP-2612) so users avoid spending gas to approve tokens.
+- Off-chain order books: decentralized exchanges often keep orders off-chain and only settle matched orders on-chain after verifying signatures from makers.
+- Document notarization: store a document's hash on-chain as proof of existence and timestamp; later reveal the document and verify its hash matches the on-chain commitment.
+- Delegated actions: a user signs a message that authorizes a relayer to perform a gas-paying transaction on their behalf; the contract verifies the signature and executes.
+
+How this project uses them:
+- `setHashedValue(bytes32)` demonstrates storing a hashed commitment on-chain.
+- `verifyMessage(string,uint8,bytes32,bytes32)` shows how a contract recovers the signer with `ecrecover` and compares it to a trusted address (owner). This mirrors how contracts check off-chain approvals or signed messages.

@@ -3,9 +3,11 @@
 /* eslint-disable */
 import type * as storageSimpleSol from "./StorageSimple.sol";
 export type { storageSimpleSol };
+export type { SecureStorage } from "./SecureStorage";
 export type { StorageArray } from "./StorageArray";
 export type { StorageMapping } from "./StorageMapping";
 export * as factories from "./factories";
+export { SecureStorage__factory } from "./factories/SecureStorage__factory";
 export { StorageArray__factory } from "./factories/StorageArray__factory";
 export { StorageMapping__factory } from "./factories/StorageMapping__factory";
 export type { SimpleStorage } from "./StorageSimple.sol/SimpleStorage";

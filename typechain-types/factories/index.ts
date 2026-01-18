@@ -2,5 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as storageSimpleSol from "./StorageSimple.sol";
+export { SecureStorage__factory } from "./SecureStorage__factory";
 export { StorageArray__factory } from "./StorageArray__factory";
 export { StorageMapping__factory } from "./StorageMapping__factory";

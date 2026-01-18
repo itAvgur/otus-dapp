@@ -14,6 +14,10 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "SecureStorage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SecureStorage__factory>;
+    getContractFactory(
       name: "StorageArray",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.StorageArray__factory>;
@@ -27,6 +31,11 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.SimpleStorage__factory>;
 
     getContractAt(
+      name: "SecureStorage",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SecureStorage>;
+    getContractAt(
       name: "StorageArray",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -43,6 +52,10 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.SimpleStorage>;
 
     deployContract(
+      name: "SecureStorage",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SecureStorage>;
+    deployContract(
       name: "StorageArray",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.StorageArray>;
@@ -55,6 +68,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SimpleStorage>;
 
+    deployContract(
+      name: "SecureStorage",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SecureStorage>;
     deployContract(
       name: "StorageArray",
       args: any[],

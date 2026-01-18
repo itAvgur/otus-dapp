@@ -1,20 +1,45 @@
 # Node modules
 /node_modules
 
-# Compilation output
+# Build / distribution output
 /dist
-
-# pnpm deploy output
 /bundle
 
-# Hardhat Build Artifacts
+# Hardhat Build Artifacts and cache
 /artifacts
-
-# Hardhat compilation (v2) support directory
 /cache
 
 # Typechain output
-/types
+/typechain-types
+/typechain
 
-# Hardhat coverage reports
+# Coverage
 /coverage
+
+# Environment files
+.env
+.env.local
+.env.*
+.secret
+
+# OS files
+.DS_Store
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Misc
+*.log
+
+# Keep bin/ committed (contains compiled outputs used by project scripts)
