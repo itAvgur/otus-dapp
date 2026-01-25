@@ -111,7 +111,7 @@ Notes:
 ### 1. Simple Variable Storage (`SimpleStorage`)
 
 **Pattern:** Single variable storage
-```solidity
+```text
 string private storedData;
 ```
 
@@ -132,7 +132,7 @@ string private storedData;
 ### 2. Array Storage (`StorageArray`)
 
 **Pattern:** Dynamic array storage
-```solidity
+```text
 string[] private dataArray;
 ```
 
@@ -167,7 +167,7 @@ string[] private dataArray;
 ### 3. Mapping Storage (`StorageMapping`)
 
 **Pattern:** Key-value storage
-```solidity
+```text
 mapping(address => string) private dataMapping;
 ```
 
@@ -260,3 +260,75 @@ Real dApp examples:
 How this project uses them:
 - `setHashedValue(bytes32)` demonstrates storing a hashed commitment on-chain.
 - `verifyMessage(string,uint8,bytes32,bytes32)` shows how a contract recovers the signer with `ecrecover` and compares it to a trusted address (owner). This mirrors how contracts check off-chain approvals or signed messages.
+
+## Blockstream Esplora Testnet client
+
+A small Node.js CLI is included to fetch the latest testnet block from Blockstream Esplora, print block metadata and all full transactions (paginated).
+
+Usage:
+
+```bash
+# Run the CLI (requires Node 18+ for global fetch)
+npm run esplora:testnet
+
+# Optional: point to a different Esplora-compatible API that contains "testnet" in the URL
+ESPLORA_API="https://blockstream.info/testnet/api" npm run esplora:testnet
+```
+
+Output:
+- The CLI prints structured logs and a final pretty JSON object to stdout with fields: `height`, `hash`, `meta`, `txs`.
+
+Notes:
+- This tool works only with testnet Esplora endpoints and will refuse a custom ESPLORA_API that doesn't contain "testnet".
+- The script uses the built-in global `fetch` (Node 18+). If you run an older Node, install a fetch polyfill or upgrade Node.
+
+## Check incoming payments (Esplora testnet)
+
+A small CLI is included to check incoming payments to a testnet address using Blockstream Esplora.
+
+What it does:
+- Queries the Esplora testnet API for the latest tip height, confirmed transactions for the address, and mempool transactions (if supported).
+- For each transaction it sums outputs (vout) that pay to the given address to compute the incoming amount.
+- Computes confirmations as `tip_height - block_height + 1` for confirmed transactions; mempool transactions have 0 confirmations.
+
+Usage:
+
+```bash
+# Requires Node 18+ (global fetch)
+node scripts/check-payments.js <testnet-address>
+
+# Example:
+node scripts/check-payments.js tb1qnjvttgnl0gkxn99gmsd8g8zzpe7nckssmy56hu
+
+# Optional: use a custom Esplora testnet API endpoint (must contain "testnet")
+ESPLORA_API="https://blockstream.info/testnet/api" node scripts/check-payments.js <address>
+```
+
+Output:
+- The CLI prints progress logs as JSON to stdout and then a final pretty JSON object with the shape:
+
+```json
+{
+  "address": "<address>",
+  "tip_height": 4837064,
+  "payments": [
+    {
+      "txid": "a9f0408844937ec5fad06947b914c3bd05e595ff062651af2fa3ba2f50b320e6",
+      "amount_sats": 60,
+      "amount_btc": "0.00000060",
+      "confirmations": 29
+    },
+    {
+      "txid": "8e616d9a0500b5749fc415578ff52b8d7de91707f028e7569cf54542bddddfe6",
+      "amount_sats": 25968,
+      "amount_btc": "0.00025968",
+      "confirmations": 28
+    }
+  ]
+}
+```
+
+Notes & limitations:
+- The script uses `/address/{address}/txs` (first page only) and `/address/{address}/txs/mempool` (if supported). Some public Esplora instances do not support address pagination (`/txs/{start}`) so the tool fetches only the most recent page of confirmed transactions.
+- Incoming amount is computed by summing `vout` entries whose `scriptpubkey_address` equals the requested address. Complex scripts or outputs without an address field may not be counted.
+- Designed for educational/demo use on testnet. For production indexing of historical data consider running your own Esplora or indexing blocks directly.

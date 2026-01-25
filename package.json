@@ -10,7 +10,8 @@
     "deploy:mapping": "hardhat run scripts/deploy-storage-mapping.js --network hardhat",
     "deploy:secure": "hardhat run scripts/deploy-secure-storage.js --network hardhat",
     "deploy:all": "hardhat run scripts/deploy-all.js --network hardhat",
-    "deploy:all:localhost": "hardhat run scripts/deploy-all.js --network localhost"
+    "deploy:all:localhost": "hardhat run scripts/deploy-all.js --network localhost",
+    "esplora:testnet": "node scripts/esplora-client.js"
   },
   "keywords": [],
   "author": "",
